@@ -12,10 +12,9 @@ class RetrofitClient private constructor() {
         private lateinit var INSTANCE: Retrofit
 
         private fun getRetrofitInstance(): Retrofit {
-
             val httpClient = OkHttpClient.Builder()
 
-            if (::INSTANCE.isInitialized) {
+            if (!::INSTANCE.isInitialized) {
                 synchronized(RetrofitClient::class) {
                     INSTANCE = Retrofit.Builder()
                         .baseUrl("http://devmasterteam.com/CursoAndroidAPI/")
@@ -25,8 +24,6 @@ class RetrofitClient private constructor() {
                 }
 
             }
-
-
             return INSTANCE
         }
 
