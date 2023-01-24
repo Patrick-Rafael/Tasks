@@ -1,5 +1,6 @@
 package com.devmasterteam.tasks.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.devmasterteam.tasks.databinding.FragmentAllTasksBinding
+import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.listener.TaskListener
 import com.devmasterteam.tasks.service.model.TaskModel
 import com.devmasterteam.tasks.view.adapter.TaskAdapter
@@ -36,19 +38,23 @@ class AllTasksFragment : Fragment() {
 
         val listener = object : TaskListener {
             override fun onListClick(id: Int) {
+                val intent = Intent(context, TaskFormActivity:: class.java)
+                val bundle = Bundle()
+                bundle.putInt(TaskConstants.BUNDLE.TASKID, id)
+                intent.putExtras(bundle)
                 viewModel.delete(id)
             }
 
             override fun onDeleteClick(id: Int) {
-                TODO("Not yet implemented")
+                viewModel.delete(id)
             }
 
             override fun onCompleteClick(id: Int) {
-                TODO("Not yet implemented")
+                viewModel.status(id, true)
             }
 
             override fun onUndoClick(id: Int) {
-                TODO("Not yet implemented")
+                viewModel.status(id, false)
             }
 
         }
@@ -80,8 +86,15 @@ class AllTasksFragment : Fragment() {
 
         }
 
-        viewModel.delete.observe(viewLifecycleOwner){
-            if(!it.status()){
+        viewModel.delete.observe(viewLifecycleOwner) {
+            if (!it.status()) {
+                Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        viewModel.status.observe(viewLifecycleOwner) {
+            if (!it.status()) {
                 Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
             }
 
